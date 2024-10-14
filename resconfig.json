@@ -1,0 +1,6 @@
+{
+  "resource_folder": "./res",
+  "widget": true,
+  "name": "RRecyclerView",
+  "id_file": "./src/widget/R.ts"
+}
