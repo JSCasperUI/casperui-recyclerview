@@ -6,7 +6,8 @@ import {AdapterDataObserver} from "@casperui/recyclerview/widget/AdapterDataObse
 
 export abstract class Adapter<T extends ViewHolder> {
     mObservable = new AdapterDataObservable();
-    constructor(config:any) {
+    constructor(config?:any) {
+
     }
 
 
