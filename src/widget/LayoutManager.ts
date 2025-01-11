@@ -88,7 +88,7 @@ export abstract class LayoutManager {
 
     attachView(view:View) {
         this.mView = view
-        this.content = new View(view.context,"div",{class:"scroll_body"})
+        this.content = new View(view.ctx(),"div",{class:"scroll_body"})
         view.addView(this.content)
         this.init()
     }

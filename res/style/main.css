@@ -9,3 +9,10 @@
 .wg_recyclerview > div > * {
     position: absolute;
 }
+.scroll_head {
+    scrollbar-gutter: stable both-edges;
+}
+
+.scroll_body {
+    margin: 0px -9px;
+}

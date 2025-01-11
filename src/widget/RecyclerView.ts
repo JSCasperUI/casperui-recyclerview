@@ -16,14 +16,14 @@ export class RecyclerView extends View implements AdapterDataObserver {
     constructor(context: Context, tag?: any, attributes?: any) {
         super(context, "WTAG");
 
-        this.inflater = (context as Activity).getLayoutInflater()
+        let inflater = context.getInflater()
 
-        this.inflater.inflate(RRecyclerView.layout.base, false, this, true)
+        inflater.inflate(RRecyclerView.layout.base, false, this, true)
 
         this.appendAttributes(attributes);
 
-        (this.node as HTMLElement).style.overflowY = "auto";
-        (this.node as HTMLElement).style.display = "block";
+        (this.mNode as HTMLElement).style.overflowY = "auto";
+        (this.mNode as HTMLElement).style.display = "block";
 
 
         this.setLayoutManager(new VerticalLayoutManager(context))
