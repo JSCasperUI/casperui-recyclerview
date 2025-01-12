@@ -7,4 +7,15 @@ export class ViewHolder {
     constructor(holder:View){
         this.mHolder = holder;
     }
+    private mIsVisible:boolean = true;
+
+
+    getVisibility():boolean {
+        return this.mIsVisible;
+    }
+    setVisibility(value:boolean){
+        this.mIsVisible = value;
+        this.mHolder.setVisibility(value)
+
+    }
 }

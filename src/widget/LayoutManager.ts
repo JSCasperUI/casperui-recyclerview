@@ -49,8 +49,7 @@ export abstract class LayoutManager {
         const weakThis = new WeakRef(this);
 
         // Устанавливаем обработчик события onscroll
-        this.mView.getElement().onscroll = () => {
-            // Получаем сильную ссылку на объект через WeakRef
+        this.mView.getElement().addEventListener("scroll", function(){
             const strongThis = weakThis.deref();
 
             // Если объект существует, выполняем действия
@@ -65,12 +64,17 @@ export abstract class LayoutManager {
                 strongThis.oldScrollX = x;
                 strongThis.oldScrollY = y;
             }
+        })
+        this.mView.getElement().onscroll = () => {
+            // Получаем сильную ссылку на объект через WeakRef
+
         };
         // this.mView.node.addEventListener("scroll", this.onScrollFn);
 
     }
     getScrollY(){
         return Math.round(this.mView.getScrollY())
+        // return this.mView.getScrollY()
     }
     getScrollX(){
         // @ts-ignore
@@ -150,7 +154,7 @@ export abstract class LayoutManager {
     getLastVisibleHolder() {
 
         for (let i = this.poolViews.length - 1; i >= 0; i--) {
-            if (this.poolViews[i].mHolder.getVisibility()) {
+            if (this.poolViews[i].getVisibility()) {
                 return this.poolViews[i]
             }
         }
@@ -158,10 +162,10 @@ export abstract class LayoutManager {
         return this.poolViews[this.poolViews.length - 1];
     }
 
-    getFirstVisibleHolder() {
+    getFirstVisibleHolder():ViewHolder {
 
         for (let i = 0; i < this.poolViews.length; i++) {
-            if (this.poolViews[i].mHolder.getVisibility()) {
+            if (this.poolViews[i].getVisibility()) {
                 return this.poolViews[i]
             }
 
