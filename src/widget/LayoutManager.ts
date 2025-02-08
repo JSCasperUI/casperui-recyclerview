@@ -2,6 +2,7 @@ import {View} from "@casperui/core/view/View";
 import {Context} from "@casperui/core/content/Context";
 import {ViewHolder} from "@casperui/recyclerview/widget/ViewHolder";
 import {Adapter} from "@casperui/recyclerview/widget/Adapter";
+import {JFragment} from "@casperui/core/app/JFragment";
 
 export abstract class LayoutManager {
     POOL_OFFSET_SIZE = 4
@@ -25,21 +26,7 @@ export abstract class LayoutManager {
     constructor(context:Context) {
         this.context = context;
 
-
-        // this.onScrollFn = this.onScroll.bind(this);
     }
-    // onScroll(){
-    //     console.log("scroll",this.getScrollY())
-    //     let y = this.mView.getScrollY()
-    //     let x = this.mView.getScrollX()
-    //     if (y>this.oldScrollY){
-    //         this.scrollToBottom()
-    //     }else{
-    //         this.scrollToTop()
-    //     }
-    //     this.oldScrollX = x
-    //     this.oldScrollY = y
-    // }
 
     init(){
         if (this.isInited) console.log("DOUBLE INIT")
@@ -48,12 +35,22 @@ export abstract class LayoutManager {
         // this.mView.node.onscroll = this.onScrollFn
         const weakThis = new WeakRef(this);
 
-        // Устанавливаем обработчик события onscroll
+
+        this.mView.waitingSelf(()=>{
+            (this.mView.getFragmentManager() as JFragment).addAttachEventListener(()=>{
+                const strongThis = weakThis.deref();
+                if (strongThis){
+                    strongThis.mView.setScrollY(strongThis.oldScrollY)
+                }
+            })
+        })
         this.mView.getElement().addEventListener("scroll", function(){
+            console.log("ONS SCROIOLS")
             const strongThis = weakThis.deref();
 
-            // Если объект существует, выполняем действия
+
             if (strongThis) {
+
                 let y = strongThis.mView.getScrollY();
                 let x = strongThis.mView.getScrollX();
                 if (y > strongThis.oldScrollY) {
@@ -65,11 +62,6 @@ export abstract class LayoutManager {
                 strongThis.oldScrollY = y;
             }
         })
-        this.mView.getElement().onscroll = () => {
-            // Получаем сильную ссылку на объект через WeakRef
-
-        };
-        // this.mView.node.addEventListener("scroll", this.onScrollFn);
 
     }
     getScrollY(){

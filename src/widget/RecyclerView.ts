@@ -5,7 +5,6 @@ import {View} from "@casperui/core/view/View";
 
 import {AdapterDataObserver} from "@casperui/recyclerview/widget/AdapterDataObserver";
 import {RRecyclerView} from "@casperui/recyclerview/widget/R";
-import {Activity} from "@casperui/core/app/Activity";
 import {Context} from "@casperui/core/content/Context";
 
 

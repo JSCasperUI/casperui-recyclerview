@@ -1,2 +1,2 @@
-mklink /D "p:\projects\widget\dev\core" "P:\projects\cas\CasperUIJS"
+mklink /D "P:\casperui\casperui-recyclerview\dev\core" "P:\casperui\casperui-core"
 
