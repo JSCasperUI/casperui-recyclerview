@@ -14,7 +14,7 @@
     "baseUrl": ".",
     "esModuleInterop": true,
     "paths": {
-//      "@casperui/core/*": ["dev/core/src/*"],
+      "@casperui/core/*": ["dev/core/src/*"],
       "@casperui/recyclerview/*": ["src/*"]
     },
     "lib": [

@@ -52,10 +52,12 @@ export class RecyclerView extends View implements AdapterDataObserver {
     }
 
     onChanged(): void {
+        // this.setScrollY(0)
         this.mLayoutManager?.setOnChanged()
     }
 
     onItemRangeChanged(positionStart: number, itemCount: number): void {
+        // this.setScrollY(0)
         this.mLayoutManager?.onItemRangeChanged(positionStart, itemCount)
     }
 

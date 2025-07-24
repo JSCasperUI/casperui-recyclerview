@@ -14,8 +14,19 @@ export class ViewHolder {
         return this.mIsVisible;
     }
     setVisibility(value:boolean){
+        if (value== this.mIsVisible) return
+
         this.mIsVisible = value;
-        this.mHolder.setVisibility(value)
+
+
+        let el = this.mHolder.getElement()
+        if (value) {
+            el.style.opacity = "1";
+            el.style.pointerEvents = "auto";
+        } else {
+            el.style.opacity = "0";
+            el.style.pointerEvents = "none";
+        }
 
     }
 }

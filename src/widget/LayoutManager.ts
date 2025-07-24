@@ -5,23 +5,21 @@ import {Adapter} from "@casperui/recyclerview/widget/Adapter";
 import {JFragment} from "@casperui/core/app/JFragment";
 
 export abstract class LayoutManager {
-    POOL_OFFSET_SIZE = 4
+    POOL_OFFSET_SIZE = 5
     context:Context
-    mAdapter:Adapter<any>|null = null
+
+
+    mAdapter:Adapter<ViewHolder>|null = null
     mView:View|null = null
     content:View|null = null
 
-
-    oldScrollX = 0.0
-    oldScrollY = 0.0
-    oldWidth = 0.0
-    oldHeight = 0.0
     poolViews:Array<ViewHolder> = []
 
 
     mHolderSize = 0
     viewsPoolSize = 0
-    itemsCount = 0
+    oldScrollX = 0
+    oldScrollY = 0
     isInited = false
     constructor(context:Context) {
         this.context = context;
@@ -32,12 +30,12 @@ export abstract class LayoutManager {
         if (this.isInited) console.log("DOUBLE INIT")
 
         this.isInited = true
-        // this.mView.node.onscroll = this.onScrollFn
-        const weakThis = new WeakRef(this);
+        const weakThis = new WeakRef<LayoutManager>(this);
 
 
         this.mView.waitingSelf(()=>{
-            (this.mView.getFragmentManager() as JFragment).addAttachEventListener(()=>{
+            let jf = (this.mView.getFragmentManager() as JFragment);
+            jf.addAttachEventListener(()=>{
                 const strongThis = weakThis.deref();
                 if (strongThis){
                     strongThis.mView.setScrollY(strongThis.oldScrollY)
@@ -45,18 +43,16 @@ export abstract class LayoutManager {
             })
         })
         this.mView.getElement().addEventListener("scroll", function(){
-            console.log("ONS SCROIOLS")
             const strongThis = weakThis.deref();
-
 
             if (strongThis) {
 
                 let y = strongThis.mView.getScrollY();
                 let x = strongThis.mView.getScrollX();
                 if (y > strongThis.oldScrollY) {
-                    strongThis.scrollToBottom();
+                    strongThis.onScroll();
                 } else {
-                    strongThis.scrollToTop();
+                    strongThis.onScroll();
                 }
                 strongThis.oldScrollX = x;
                 strongThis.oldScrollY = y;
@@ -74,17 +70,15 @@ export abstract class LayoutManager {
     }
 
 
-    /**
-     * @param {Adapter} adapter
-     */
     attachAdapter(adapter:Adapter<any>) {
+        this.poolViews = []
         this.mAdapter = adapter;
     }
 
 
     attachView(view:View) {
         this.mView = view
-        this.content = new View(view.ctx(),"div",{class:"scroll_body"})
+        this.content = new View(view.ctx(),"div",{"class":"scroll_body"})
         view.addView(this.content)
         this.init()
     }
@@ -93,45 +87,33 @@ export abstract class LayoutManager {
     setOnChanged(){}
     abstract onItemRangeChanged(positionStart:number, itemCount:number)
 
-    abstract scrollToBottom()
+    abstract onScroll()
 
-    abstract scrollToTop()
 
-    setupScroll(height){
+    setupScroll(height:number){
         this.content.setHeight(height)
     }
 
 
-    rotateLeft() {
-        const tmp = this.poolViews[this.poolViews.length - 1];
-        this.poolViews.pop();
-        this.poolViews.unshift(tmp);
-    }
-
-    rotateRight() {
-        const tmp = this.poolViews[0];
-        this.poolViews.shift();
-        this.poolViews.push(tmp);
-    }
 
     clearHolders(){
         this.content.removeAllViews()
         this.poolViews = []
     }
 
+    onBindViewHolder(holder:ViewHolder,position:number){
+        if (this.mAdapter){
+            holder.mLastIndex = position
+            this.mAdapter.onBindViewHolder(holder, position)
+        }
+    }
 
-    /**
-     * @param {ViewHolder} holder
-     */
-    addHolder(holder){
-        holder.mHolder.setOpacity(0)
+    addHolder(holder:ViewHolder){
+        holder.setVisibility(false)
         this.poolViews.push(holder)
         this.content.addView(holder.mHolder)
     }
 
-    /**
-     * @return {View}
-     */
     getParent() {
         return this.content
     }
@@ -175,15 +157,7 @@ export abstract class LayoutManager {
 
     }
 
-    /**
-     * @return {ViewHolder}
-     */
-    getFirstHolder() {
-        return this.poolViews[0]
-    }
-    /**
-     * @return {ViewHolder}
-     */
+
     getLastHolder() {
         return this.poolViews[this.poolViews.length - 1]
     }
