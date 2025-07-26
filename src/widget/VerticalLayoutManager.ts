@@ -13,65 +13,30 @@ export class VerticalLayoutManager extends LayoutManager {
 	firstHolder = {dataIndex: 0, holderIndex: 0}
 	lastHolder = {dataIndex: 0, holderIndex: 0}
 
-	updateViewPoolSize(isResize: boolean) {
-		let isBindHolder = false
+	updateViewPoolSize() {
 		let windowHeight = window.screen.height;
 		if (windowHeight === 0) {
 			return false
 		}
+
 		this.clearHolders()
-		let start = 1
 
 		if (this.getChildCount() === 0) {
+			let holderHeight = this.mAdapter?.getHolderHeight()
 			let firstHolder = this.mAdapter?.createViewHolder(this.getParent(), 0)
 			this.addHolder(firstHolder)
-			this.mHolderSize = firstHolder.mHolder.getHeight()
+			this.mHolderSize = holderHeight?holderHeight:firstHolder.mHolder.getHeight()
 			if (this.mHolderSize === 0) {
 				return
 			}
-			this.setupScroll(this.mHolderSize * this.mAdapter.getItemCount())
 			this.viewsPoolSize = Math.ceil(windowHeight / this.mHolderSize) + this.POOL_OFFSET_SIZE
 
-		} else {
-			this.mHolderSize = this.poolViews[0].mHolder.getHeight()
-			let tmp = Math.ceil(windowHeight / this.mHolderSize) + this.POOL_OFFSET_SIZE
-			if (tmp > this.viewsPoolSize) {
-				start = this.viewsPoolSize;
-				this.viewsPoolSize = tmp;
-			} else {
-				return false
+			for (let i = 1; i < this.viewsPoolSize; i++) {
+				let holder = this.mAdapter.createViewHolder(this.getParent(), 0);
+				this.addHolder(holder)
 			}
 
 		}
-		let nextIndex = Math.ceil((this.getScrollY() + (this.getChildCount() * this.mHolderSize) + this.mHolderSize) / this.mHolderSize) - this.POOL_OFFSET_SIZE + 2;
-
-		if (!isResize) {
-			nextIndex = start;
-		} else {
-			let index = this.getLastHolder().mLastIndex
-			if (index > this.mAdapter.getItemCount()) {
-				return false
-			}
-		}
-		for (let i = start; i < this.viewsPoolSize; i++) {
-			let holder = this.mAdapter.createViewHolder(this.getParent(), 0);
-			let index = this.getLastVisibleHolder().mLastIndex + 1;
-			this.addHolder(holder)
-			isBindHolder = true
-			if (isResize) {
-				if (index + 1 > this.mAdapter.getItemCount()) {
-
-				} else {
-					const c = this.getLastVisibleHolder().mHolder;
-					this.onBindViewHolder(holder, index);
-					holder.mHolder.setTranslateY(c.getTranslateY() + this.mHolderSize)
-					// holder.mHolder.setParameter("localIndex", index.toString())
-				}
-			}
-
-			nextIndex++
-		}
-		return isBindHolder;
 	}
 
 
@@ -81,7 +46,7 @@ export class VerticalLayoutManager extends LayoutManager {
 			this.setOnChanged()
 			return
 		}
-		if (start < 0 || start >= itemsCount && start< 0 ) return;
+		if (start < 0 || start >= itemsCount && start < 0) return;
 
 		for (let i = 0; i < this.poolViews.length; i++) {
 			if (this.poolViews[i].mLastIndex === start) {
@@ -140,7 +105,7 @@ export class VerticalLayoutManager extends LayoutManager {
 		let maxIndexPool = this.lastHolder.dataIndex
 
 
-		if (needIndexBottom > maxIndexPool && maxIndexPool!=itemsCount-1) {
+		if (needIndexBottom > maxIndexPool && maxIndexPool != itemsCount - 1) {
 			let replaceIndex = minIndexPool
 			let replaceTo = maxIndexPool + 1
 			let skipCount = needIndexBottom - maxIndexPool
@@ -158,12 +123,12 @@ export class VerticalLayoutManager extends LayoutManager {
 
 			let startIter = this.lastHolder.dataIndex
 			let holderIndex = this.firstHolder.holderIndex
-			let max = Math.min(startIter + skipCount, itemsCount-1 )
+			let max = Math.min(startIter + skipCount, itemsCount - 1)
 			for (let i = startIter; i < max; i++) {
 				let index = holderIndex % (this.viewsPoolSize)
 				const holder = this.poolViews[index] as ViewHolder;
 				this.onBindViewHolder(holder, replaceTo);
-				holder.mLastIndex = replaceTo;
+
 				this.lastHolder.dataIndex = replaceTo;
 				this.lastHolder.holderIndex = index;
 
@@ -208,8 +173,6 @@ export class VerticalLayoutManager extends LayoutManager {
 				this.lastHolder.dataIndex--
 
 
-
-
 				offset -= this.mHolderSize
 				setTo--
 				holderIndex = (holderIndex - 1 + this.viewsPoolSize) % this.viewsPoolSize;
@@ -223,13 +186,14 @@ export class VerticalLayoutManager extends LayoutManager {
 	setOnChanged() {
 		super.setOnChanged()
 		if (this.mHolderSize === 0) {
-			this.updateViewPoolSize(false)
+			this.updateViewPoolSize()
 			if (this.mHolderSize === 0) {
 				return;
 			}
 		}
 
 		let height = this.getMeasuredHeight()
+
 		let items = this.mAdapter.getItemCount()
 
 		for (let i = 0; i < this.poolViews.length; i++) {

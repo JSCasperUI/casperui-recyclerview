@@ -5,66 +5,77 @@ import {AdapterDataObserver} from "@casperui/recyclerview/widget/AdapterDataObse
 
 
 export abstract class Adapter<T extends ViewHolder> {
-    mObservable = new AdapterDataObservable();
-    constructor(config?:any) {
+	mObservable = new AdapterDataObservable();
 
-    }
+	constructor(config?: any) {
 
+	}
 
+	getHolderHeight(viewType: number = 0): number {
+		return 0
+	}
+	getHolderWidth(viewType: number = 0): number {
+		return 0
+	}
 
-    abstract createViewHolder(parent:View,viewType:number):T
-
-
-    abstract onBindViewHolder(holder:T,position:number):void
-
-    abstract getItemCount():number
-
-
-    hasObservers():boolean {
-        return this.mObservable.hasObservers()
-    }
+	abstract createViewHolder(parent: View, viewType: number): T
 
 
-    registerAdapterDataObserver(observer:AdapterDataObserver) {
-        this.mObservable.registerObserver(observer);
-    }
+	abstract onBindViewHolder(holder: T, position: number): void
 
-    unregisterAdapterDataObserver(observer:AdapterDataObserver) {
-        this.mObservable.unregisterObserver(observer)
-    }
+	abstract getItemCount(): number
 
 
-
-    notifyDataSetChanged() { this.mObservable.notifyChanged(); }
-
-
-    notifyItemChanged( position:number) { this.mObservable.notifyItemRangeChanged(position, 1); }
+	hasObservers(): boolean {
+		return this.mObservable.hasObservers()
+	}
 
 
-    notifyItemRangeChanged( positionStart:number,  itemCount:number) { this.mObservable.notifyItemRangeChanged(positionStart, itemCount); }
+	registerAdapterDataObserver(observer: AdapterDataObserver) {
+		this.mObservable.registerObserver(observer);
+	}
+
+	unregisterAdapterDataObserver(observer: AdapterDataObserver) {
+		this.mObservable.unregisterObserver(observer)
+	}
 
 
-    notifyItemInserted(position:number) {
-        this.mObservable.notifyItemRangeInserted(position, 1);
-    }
+	notifyDataSetChanged() {
+		this.mObservable.notifyChanged();
+	}
 
 
-    notifyItemMoved( fromPosition:number,  toPosition:number) {
-        this.mObservable.notifyItemMoved(fromPosition, toPosition);
-    }
+	notifyItemChanged(position: number) {
+		this.mObservable.notifyItemRangeChanged(position, 1);
+	}
 
 
-    notifyItemRangeInserted( positionStart:number,  itemCount:number) {
-        this.mObservable.notifyItemRangeInserted(positionStart, itemCount);
-    }
-
-    notifyItemRemoved( position:number) {
-        this.mObservable.notifyItemRangeRemoved(position, 1);
-    }
+	notifyItemRangeChanged(positionStart: number, itemCount: number) {
+		this.mObservable.notifyItemRangeChanged(positionStart, itemCount);
+	}
 
 
-    notifyItemRangeRemoved( positionStart:number,  itemCount:number) {
-        this.mObservable.notifyItemRangeRemoved(positionStart, itemCount);
-    }
+	notifyItemInserted(position: number) {
+		this.mObservable.notifyItemRangeInserted(position, 1);
+	}
+
+
+	notifyItemMoved(fromPosition: number, toPosition: number) {
+		this.mObservable.notifyItemMoved(fromPosition, toPosition);
+	}
+
+
+	notifyItemRangeInserted(positionStart: number, itemCount: number) {
+		this.mObservable.notifyItemRangeInserted(positionStart, itemCount);
+	}
+
+	notifyItemRemoved(position: number) {
+		this.mObservable.notifyItemRangeRemoved(position, 1);
+	}
+
+
+	notifyItemRangeRemoved(positionStart: number, itemCount: number) {
+		this.mObservable.notifyItemRangeRemoved(positionStart, itemCount);
+	}
 
 }

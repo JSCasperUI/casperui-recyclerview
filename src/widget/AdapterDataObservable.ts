@@ -3,42 +3,42 @@ import {AdapterDataObserver} from "@casperui/recyclerview/widget/AdapterDataObse
 
 
 export class AdapterDataObservable extends Observable<AdapterDataObserver> {
-    constructor() {
-        super();
-    }
+	constructor() {
+		super();
+	}
 
-    hasObservers():boolean {
-        return this.mObservers.length > 0;
-    }
+	hasObservers(): boolean {
+		return this.mObservers.length > 0;
+	}
 
-    notifyChanged() {
-        for (let i = 0; i < this.mObservers.length; i++) {
-            this.mObservers[i].onChanged();
-        }
-    }
+	notifyChanged() {
+		for (let i = 0; i < this.mObservers.length; i++) {
+			this.mObservers[i].onChanged();
+		}
+	}
 
-    notifyItemRangeChanged( positionStart:number,itemCount:number) {
-        for (let i = 0; i < this.mObservers.length; i++) {
-            this.mObservers[i].onItemRangeChanged(positionStart, itemCount);
-        }
-    }
+	notifyItemRangeChanged(positionStart: number, itemCount: number) {
+		for (let i = 0; i < this.mObservers.length; i++) {
+			this.mObservers[i].onItemRangeChanged(positionStart, itemCount);
+		}
+	}
 
 
-    notifyItemRangeInserted( positionStart:number,  itemCount:number) {
-        for (let i = 0; i < this.mObservers.length; i++) {
-            this.mObservers[i].onItemRangeInserted(positionStart, itemCount);
-        }
-    }
+	notifyItemRangeInserted(positionStart: number, itemCount: number) {
+		for (let i = 0; i < this.mObservers.length; i++) {
+			this.mObservers[i].onItemRangeInserted(positionStart, itemCount);
+		}
+	}
 
-    notifyItemRangeRemoved( positionStart:number,  itemCount:number) {
-        for (let i = 0; i < this.mObservers.length; i++) {
-            this.mObservers[i].onItemRangeRemoved(positionStart, itemCount);
-        }
-    }
+	notifyItemRangeRemoved(positionStart: number, itemCount: number) {
+		for (let i = 0; i < this.mObservers.length; i++) {
+			this.mObservers[i].onItemRangeRemoved(positionStart, itemCount);
+		}
+	}
 
-    notifyItemMoved( fromPosition:number, toPosition:number) {
-        for (let i = 0; i < this.mObservers.length; i++) {
-            this.mObservers[i].onItemRangeMoved(fromPosition, toPosition, 1);
-        }
-    }
+	notifyItemMoved(fromPosition: number, toPosition: number) {
+		for (let i = 0; i < this.mObservers.length; i++) {
+			this.mObservers[i].onItemRangeMoved(fromPosition, toPosition, 1);
+		}
+	}
 }

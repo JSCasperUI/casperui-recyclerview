@@ -10,66 +10,66 @@ import {Context} from "@casperui/core/content/Context";
 
 export class RecyclerView extends View implements AdapterDataObserver {
 
-    mAdapter:Adapter<any>|null = null
-    mLayoutManager:LayoutManager|null = null
-    constructor(context: Context, tag?: any, attributes?: any) {
-        super(context, "WTAG");
+	mAdapter: Adapter<any> | null = null
+	mLayoutManager: LayoutManager | null = null
 
-        let inflater = context.getInflater()
+	constructor(context: Context, tag?: any, attributes?: any) {
+		super(context, "WTAG");
 
-        inflater.inflate(RRecyclerView.layout.base, false, this, true)
+		let inflater = context.getInflater()
 
-        this.appendAttributes(attributes);
+		inflater.inflate(RRecyclerView.layout.base, false, this, true)
 
-        (this.mNode as HTMLElement).style.overflowY = "auto";
-        (this.mNode as HTMLElement).style.display = "block";
+		this.appendAttributes(attributes);
 
-
-        this.setLayoutManager(new VerticalLayoutManager(context))
-    }
+		(this.mNode as HTMLElement).style.overflowY = "auto";
+		(this.mNode as HTMLElement).style.display = "block";
 
 
-    setAdapter(adapter:Adapter<any>){
-        if (this.mAdapter!=null){
-            this.mAdapter.unregisterAdapterDataObserver(this)
-            this.mAdapter = null
-        }
-        if (adapter == null) return
-        this.mAdapter = adapter
-        this.mAdapter.registerAdapterDataObserver(this)
-
-        if (this.mLayoutManager){
-            this.mLayoutManager.attachAdapter(this.mAdapter)
-        }
-
-    }
+		this.setLayoutManager(new VerticalLayoutManager(context))
+	}
 
 
-    setLayoutManager(manager:LayoutManager){
-        this.mLayoutManager = manager
-        this.mLayoutManager.attachAdapter(this.mAdapter)
-        this.mLayoutManager.attachView(this)
-    }
+	setAdapter(adapter: Adapter<any>) {
+		if (this.mAdapter != null) {
+			this.mAdapter.unregisterAdapterDataObserver(this)
+			this.mAdapter = null
+		}
+		if (adapter == null) return
+		this.mAdapter = adapter
+		this.mAdapter.registerAdapterDataObserver(this)
 
-    onChanged(): void {
-        // this.setScrollY(0)
-        this.mLayoutManager?.setOnChanged()
-    }
+		if (this.mLayoutManager) {
+			this.mLayoutManager.attachAdapter(this.mAdapter)
+		}
 
-    onItemRangeChanged(positionStart: number, itemCount: number): void {
-        // this.setScrollY(0)
-        this.mLayoutManager?.onItemRangeChanged(positionStart, itemCount)
-    }
+	}
 
-    onItemRangeInserted(positionStart: number, itemCount: number): void {
-    }
 
-    onItemRangeMoved(fromPosition: number, toPosition: number, itemCount: number): void {
-    }
+	setLayoutManager(manager: LayoutManager) {
+		this.mLayoutManager = manager
+		this.mLayoutManager.attachAdapter(this.mAdapter)
+		this.mLayoutManager.attachView(this)
+	}
 
-    onItemRangeRemoved(positionStart: number, itemCount: number): void {
-    }
+	onChanged(): void {
+		// this.setScrollY(0)
+		this.mLayoutManager?.setOnChanged()
+	}
 
+	onItemRangeChanged(positionStart: number, itemCount: number): void {
+		// this.setScrollY(0)
+		this.mLayoutManager?.onItemRangeChanged(positionStart, itemCount)
+	}
+
+	onItemRangeInserted(positionStart: number, itemCount: number): void {
+	}
+
+	onItemRangeMoved(fromPosition: number, toPosition: number, itemCount: number): void {
+	}
+
+	onItemRangeRemoved(positionStart: number, itemCount: number): void {
+	}
 
 
 }

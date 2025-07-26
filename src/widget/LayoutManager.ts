@@ -5,160 +5,185 @@ import {Adapter} from "@casperui/recyclerview/widget/Adapter";
 import {JFragment} from "@casperui/core/app/JFragment";
 
 export abstract class LayoutManager {
-    POOL_OFFSET_SIZE = 5
-    context:Context
+	POOL_OFFSET_SIZE = 5
+	context: Context
 
 
-    mAdapter:Adapter<ViewHolder>|null = null
-    mView:View|null = null
-    content:View|null = null
+	mAdapter: Adapter<ViewHolder> | null = null
+	mView: View | null = null
+	content: View | null = null
 
-    poolViews:Array<ViewHolder> = []
-
-
-    mHolderSize = 0
-    viewsPoolSize = 0
-    oldScrollX = 0
-    oldScrollY = 0
-    isInited = false
-    constructor(context:Context) {
-        this.context = context;
-
-    }
-
-    init(){
-        if (this.isInited) console.log("DOUBLE INIT")
-
-        this.isInited = true
-        const weakThis = new WeakRef<LayoutManager>(this);
+	poolViews: Array<ViewHolder> = []
 
 
-        this.mView.waitingSelf(()=>{
-            let jf = (this.mView.getFragmentManager() as JFragment);
-            jf.addAttachEventListener(()=>{
-                const strongThis = weakThis.deref();
-                if (strongThis){
-                    strongThis.mView.setScrollY(strongThis.oldScrollY)
-                }
-            })
-        })
-        this.mView.getElement().addEventListener("scroll", function(){
-            const strongThis = weakThis.deref();
+	mHolderSize = 0
+	viewsPoolSize = 0
+	oldScrollX = 0
+	oldScrollY = 0
 
-            if (strongThis) {
+	scrollX = 0
+	scrollY = 0
+	isInited = false
+	private measuredHeight: number = 0;
 
-                let y = strongThis.mView.getScrollY();
-                let x = strongThis.mView.getScrollX();
-                if (y > strongThis.oldScrollY) {
-                    strongThis.onScroll();
-                } else {
-                    strongThis.onScroll();
-                }
-                strongThis.oldScrollX = x;
-                strongThis.oldScrollY = y;
-            }
-        })
+	constructor(context: Context) {
+		this.context = context;
 
-    }
-    getScrollY(){
-        return Math.round(this.mView.getScrollY())
-        // return this.mView.getScrollY()
-    }
-    getScrollX(){
-        // @ts-ignore
-        return this.mView.getScrollX()
-    }
+	}
 
 
-    attachAdapter(adapter:Adapter<any>) {
-        this.poolViews = []
-        this.mAdapter = adapter;
-    }
+	init() {
+
+		if (this.isInited) console.log("DOUBLE INIT")
+
+		this.isInited = true
+		const weakThis = new WeakRef<LayoutManager>(this);
 
 
-    attachView(view:View) {
-        this.mView = view
-        this.content = new View(view.ctx(),"div",{"class":"scroll_body"})
-        view.addView(this.content)
-        this.init()
-    }
+		this.mView.waitingSelf(() => {
+			let jf = (this.mView.getFragmentManager() as JFragment);
+			jf.addAttachEventListener(() => {
+				const strongThis = weakThis.deref();
+				if (strongThis) {
+					strongThis.mView.setScrollY(strongThis.oldScrollY)
+				}
+			})
+		})
+		this.mView.getElement().addEventListener("scroll", function () {
+			const strongThis = weakThis.deref();
+
+			if (strongThis) {
+
+				let y = strongThis.mView.getScrollY();
+				let x = strongThis.mView.getScrollX();
+
+				strongThis.scrollX = Math.round(x)
+				strongThis.scrollY = Math.round(y)
+				if (y > strongThis.oldScrollY) {
+					strongThis.onScroll();
+				} else {
+					strongThis.onScroll();
+				}
+				strongThis.oldScrollX = x;
+				strongThis.oldScrollY = y;
+
+			}
+		})
+
+		if (this.mView) {
+			const el = this.mView.getElement();
+			if (el) {
+				const ro = new ResizeObserver(entries => {
+					this.measuredHeight = Math.round(entries[0].contentRect.height);
+				});
+				ro.observe(el);
+			}
+		}
+	}
+
+	getScrollY() {
+		return this.scrollY;
+		// return this.mView.getScrollY()
+	}
+
+	getScrollX() {
+		// @ts-ignore
+		return this.scrollX;
+	}
 
 
-    setOnChanged(){}
-    abstract onItemRangeChanged(positionStart:number, itemCount:number)
-
-    abstract onScroll()
-
-
-    setupScroll(height:number){
-        this.content.setHeight(height)
-    }
+	attachAdapter(adapter: Adapter<any>) {
+		this.poolViews = []
+		this.mAdapter = adapter;
+	}
 
 
-
-    clearHolders(){
-        this.content.removeAllViews()
-        this.poolViews = []
-    }
-
-    onBindViewHolder(holder:ViewHolder,position:number){
-        if (this.mAdapter){
-            holder.mLastIndex = position
-            this.mAdapter.onBindViewHolder(holder, position)
-        }
-    }
-
-    addHolder(holder:ViewHolder){
-        holder.setVisibility(false)
-        this.poolViews.push(holder)
-        this.content.addView(holder.mHolder)
-    }
-
-    getParent() {
-        return this.content
-    }
-    getMeasuredHeight() {
-        return this.mView.getHeight()
-
-    }
-    getChildCount() {
-        return this.content.getChildren().length
-    }
-
-    getLastVisibleHolder() {
-
-        for (let i = this.poolViews.length - 1; i >= 0; i--) {
-            if (this.poolViews[i].getVisibility()) {
-                return this.poolViews[i]
-            }
-        }
-
-        return this.poolViews[this.poolViews.length - 1];
-    }
-
-    getFirstVisibleHolder():ViewHolder {
-
-        for (let i = 0; i < this.poolViews.length; i++) {
-            if (this.poolViews[i].getVisibility()) {
-                return this.poolViews[i]
-            }
-
-        }
+	attachView(view: View) {
+		this.mView = view
+		this.content = new View(view.ctx(), "div", {"class": "scroll_body"})
+		view.addView(this.content)
+		this.init()
+	}
 
 
-        return this.poolViews[0];
-        // for (i in 0 until poolViews.size) {
-        //     if (poolViews.get(i).holder.getVisibility()) {
-        //         return poolViews.get(i)
-        //     }
-        //
-        // }
-        // return poolViews.get(0);
+	setOnChanged() {
+	}
 
-    }
+	abstract onItemRangeChanged(positionStart: number, itemCount: number)
+
+	abstract onScroll()
 
 
-    getLastHolder() {
-        return this.poolViews[this.poolViews.length - 1]
-    }
+	setupScroll(height: number) {
+		this.content.setHeight(height)
+	}
+
+
+	clearHolders() {
+		this.content.removeAllViews()
+		this.poolViews = []
+	}
+
+	onBindViewHolder(holder: ViewHolder, position: number) {
+		if (this.mAdapter) {
+			holder.mLastIndex = position
+			this.mAdapter.onBindViewHolder(holder, position)
+		}
+	}
+
+	addHolder(holder: ViewHolder) {
+		holder.setVisibility(false)
+		this.poolViews.push(holder)
+		this.content.addView(holder.mHolder)
+	}
+
+	getParent() {
+		return this.content
+	}
+
+	getMeasuredHeight() {
+		return this.measuredHeight
+
+	}
+
+	getChildCount() {
+		return this.content.getChildren().length
+	}
+
+	getLastVisibleHolder() {
+
+		for (let i = this.poolViews.length - 1; i >= 0; i--) {
+			if (this.poolViews[i].getVisibility()) {
+				return this.poolViews[i]
+			}
+		}
+
+		return this.poolViews[this.poolViews.length - 1];
+	}
+
+	getFirstVisibleHolder(): ViewHolder {
+
+		for (let i = 0; i < this.poolViews.length; i++) {
+			if (this.poolViews[i].getVisibility()) {
+				return this.poolViews[i]
+			}
+
+		}
+
+
+		return this.poolViews[0];
+		// for (i in 0 until poolViews.size) {
+		//     if (poolViews.get(i).holder.getVisibility()) {
+		//         return poolViews.get(i)
+		//     }
+		//
+		// }
+		// return poolViews.get(0);
+
+	}
+
+
+	getLastHolder() {
+		return this.poolViews[this.poolViews.length - 1]
+	}
 }
