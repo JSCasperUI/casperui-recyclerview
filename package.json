@@ -1,21 +1,63 @@
 {
   "name": "@casperui/recyclerview",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "scripts": {
-    "generate-barrels": "barrelsby --structure filesystem --delete -d src",
-    "build": "npm run generate-barrels && tsc && tsc-alias",
-    "release_pack": "npm run generate-barrels && tsc && tsc-alias && npm pack",
-    "resources": "node dev/core/resmaker/src/main.js --include_path"
+    "resources": "resmaker",
+    "build": "resmaker && tsc && tsc-alias && npx gen-exports dist -p package.json",
+    "release_pack": "npm run build && npm pack"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "files": [
     "dist/**/*",
-    "src/**/*",
+    "res/**/*",
+    "resconfig.json",
     "*.map"
   ],
   "exports": {
-    "./*": "./dist/*"
+    "./widget/Adapter": {
+      "import": "./dist/widget/Adapter.js",
+      "require": "./dist/widget/Adapter.js",
+      "types": "./dist/widget/Adapter.d.ts"
+    },
+    "./widget/AdapterDataObservable": {
+      "import": "./dist/widget/AdapterDataObservable.js",
+      "require": "./dist/widget/AdapterDataObservable.js",
+      "types": "./dist/widget/AdapterDataObservable.d.ts"
+    },
+    "./widget/AdapterDataObserver": {
+      "import": "./dist/widget/AdapterDataObserver.js",
+      "require": "./dist/widget/AdapterDataObserver.js",
+      "types": "./dist/widget/AdapterDataObserver.d.ts"
+    },
+    "./widget/LayoutManager": {
+      "import": "./dist/widget/LayoutManager.js",
+      "require": "./dist/widget/LayoutManager.js",
+      "types": "./dist/widget/LayoutManager.d.ts"
+    },
+    "./widget/Observable": {
+      "import": "./dist/widget/Observable.js",
+      "require": "./dist/widget/Observable.js",
+      "types": "./dist/widget/Observable.d.ts"
+    },
+    "./widget/R": {
+      "import": "./dist/widget/R.js",
+      "require": "./dist/widget/R.js",
+      "types": "./dist/widget/R.d.ts"
+    },
+    "./widget/RecyclerView": {
+      "import": "./dist/widget/RecyclerView.js",
+      "require": "./dist/widget/RecyclerView.js",
+      "types": "./dist/widget/RecyclerView.d.ts"
+    },
+    "./widget/VerticalLayoutManager": {
+      "import": "./dist/widget/VerticalLayoutManager.js",
+      "require": "./dist/widget/VerticalLayoutManager.js",
+      "types": "./dist/widget/VerticalLayoutManager.d.ts"
+    },
+    "./widget/ViewHolder": {
+      "import": "./dist/widget/ViewHolder.js",
+      "require": "./dist/widget/ViewHolder.js",
+      "types": "./dist/widget/ViewHolder.d.ts"
+    }
   },
   "typesVersions": {
     "*": {
@@ -24,9 +66,14 @@
       ]
     }
   },
+  "peerDependencies": {
+    "@casperui/core": ">=0.0.8 <1.0.0"
+  },
   "devDependencies": {
-    "barrelsby": "^2.8.1",
     "tsc-alias": "^1.8.10",
+    "tsc-esm-fix": "^3.1.2",
+    "gen-exports": "^1.1.2",
     "typescript": "^5.6.2"
-  }
+  },
+  "dependencies": {}
 }

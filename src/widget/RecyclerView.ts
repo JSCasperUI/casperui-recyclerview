@@ -36,6 +36,7 @@ export class RecyclerView extends View implements AdapterDataObserver {
 			this.mAdapter = null
 		}
 		if (adapter == null) return
+
 		this.mAdapter = adapter
 		this.mAdapter.registerAdapterDataObserver(this)
 
