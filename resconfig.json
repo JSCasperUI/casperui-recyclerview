@@ -1,6 +1,10 @@
 {
-  "resource_folder": "./res",
-  "widget": true,
-  "name": "RRecyclerView",
-  "id_file": "./src/widget/R.ts"
+  "resourceDir": "./res",
+  "widget": {
+    "name": "RRecyclerView",
+    "id": "./dist/widget/R.js"
+  },
+  "output": {
+    "id": "./src/widget/R.ts"
+  }
 }

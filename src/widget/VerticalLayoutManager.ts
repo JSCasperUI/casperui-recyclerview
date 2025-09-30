@@ -20,8 +20,9 @@ export class VerticalLayoutManager extends LayoutManager {
 		}
 
 		this.clearHolders()
-
+		console.time("LayoutManager.updateViewPoolSize")
 		if (this.getChildCount() === 0) {
+			this.lockView()
 			let holderHeight = this.mAdapter?.getHolderHeight()
 			let firstHolder = this.mAdapter?.createViewHolder(this.getParent(), 0)
 			this.addHolder(firstHolder)
@@ -35,8 +36,10 @@ export class VerticalLayoutManager extends LayoutManager {
 				let holder = this.mAdapter.createViewHolder(this.getParent(), 0);
 				this.addHolder(holder)
 			}
+			this.unlockView()
 
 		}
+		console.timeEnd("LayoutManager.updateViewPoolSize")
 	}
 
 
@@ -61,7 +64,6 @@ export class VerticalLayoutManager extends LayoutManager {
 		let expectedY = startIndex * this.mHolderSize;
 		this.firstHolder.dataIndex = startIndex;
 		this.firstHolder.holderIndex = 0;
-
 		for (let i = 0; i < itemCount; i++) {
 			const holder = this.poolViews[i] as ViewHolder;
 			this.onBindViewHolder(holder, startIndex);
@@ -110,7 +112,7 @@ export class VerticalLayoutManager extends LayoutManager {
 			let replaceTo = maxIndexPool + 1
 			let skipCount = needIndexBottom - maxIndexPool
 
-			if (skipCount > this.viewsPoolSize - 5) {
+			if (skipCount > Math.floor(this.viewsPoolSize * 0.5)) {
 				let endIndex = Math.min(itemsCount - needIndexTop, this.viewsPoolSize)
 				//TODO check limits
 				if (needIndexTop + endIndex == itemsCount) {
@@ -146,7 +148,7 @@ export class VerticalLayoutManager extends LayoutManager {
 
 		} else if (minIndexPool != 0 && needIndexTop < minIndexPool) {
 			let skipCount = (minIndexPool) - needIndexTop
-			if (skipCount > this.viewsPoolSize - 5) {
+			if (skipCount > Math.floor(this.viewsPoolSize * 0.5)) {
 				let endIndex = Math.min(itemsCount, this.viewsPoolSize)
 				this.rebindAll(needIndexTop, endIndex)
 				return;

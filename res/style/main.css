@@ -1,18 +1,22 @@
 .wg_recyclerview {
     height: 100%;
+    will-change: scroll-position;
 }
 
 .wg_recyclerview > div {
     position: relative;
+
 }
 
 .wg_recyclerview > div > * {
     position: absolute;
+    will-change: transform;
+
 }
 .scroll_head {
     scrollbar-gutter: stable both-edges;
 }
 
 .scroll_body {
-    margin: 0px -9px;
+    margin: 0 -10px;
 }

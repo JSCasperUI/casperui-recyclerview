@@ -1,6 +1,6 @@
 {
   "name": "@casperui/recyclerview",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "scripts": {
     "resources": "resmaker",
     "build": "resmaker && tsc && tsc-alias && npx gen-exports dist -p package.json",
@@ -27,6 +27,11 @@
       "import": "./dist/widget/AdapterDataObserver.js",
       "require": "./dist/widget/AdapterDataObserver.js",
       "types": "./dist/widget/AdapterDataObserver.d.ts"
+    },
+    "./widget/bind": {
+      "import": "./dist/widget/bind.js",
+      "require": "./dist/widget/bind.js",
+      "types": "./dist/widget/bind.d.ts"
     },
     "./widget/LayoutManager": {
       "import": "./dist/widget/LayoutManager.js",
@@ -70,6 +75,7 @@
     "@casperui/core": ">=0.0.8 <1.0.0"
   },
   "devDependencies": {
+    "@casperui/core": "0.0.9",
     "tsc-alias": "^1.8.10",
     "tsc-esm-fix": "^3.1.2",
     "gen-exports": "^1.1.2",

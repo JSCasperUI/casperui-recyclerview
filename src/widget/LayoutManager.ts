@@ -10,7 +10,7 @@ export abstract class LayoutManager {
 
 
 	mAdapter: Adapter<ViewHolder> | null = null
-	mView: View | null = null
+	recyclerView: View | null = null
 	content: View | null = null
 
 	poolViews: Array<ViewHolder> = []
@@ -25,6 +25,7 @@ export abstract class LayoutManager {
 	scrollY = 0
 	isInited = false
 	private measuredHeight: number = 0;
+	private lockFragment: View = null;
 
 	constructor(context: Context) {
 		this.context = context;
@@ -40,38 +41,51 @@ export abstract class LayoutManager {
 		const weakThis = new WeakRef<LayoutManager>(this);
 
 
-		this.mView.waitingSelf(() => {
-			let jf = (this.mView.getFragmentManager() as JFragment);
+		this.recyclerView.waitingSelf(() => {
+			let jf = (this.recyclerView.getFragmentManager() as JFragment);
 			jf.addAttachEventListener(() => {
 				const strongThis = weakThis.deref();
 				if (strongThis) {
-					strongThis.mView.setScrollY(strongThis.oldScrollY)
+					strongThis.recyclerView.setScrollY(strongThis.oldScrollY)
 				}
 			})
 		})
-		this.mView.getElement().addEventListener("scroll", function () {
+		let scheduled = false;
+		let skipFrame = 0;
+
+		this.recyclerView.getElement().addEventListener("scroll", function () {
 			const strongThis = weakThis.deref();
+			if (!strongThis) return;
 
-			if (strongThis) {
+			if (skipFrame > 0){
+				console.log("DOUBLE INITreturn")
+				return;
+			};
+			skipFrame = 1;
+			let before = strongThis.recyclerView.getScrollY();
+			requestAnimationFrame(() => {
+				skipFrame--
+				const strongNow = weakThis.deref();
+				if (!strongNow) return;
 
-				let y = strongThis.mView.getScrollY();
-				let x = strongThis.mView.getScrollX();
+
+				let y = strongThis.recyclerView.getScrollY();
+				let x = strongThis.recyclerView.getScrollX();
+				const after = y;
+				console.log("Before:", before, "After:", after, "Δ", after - before);
 
 				strongThis.scrollX = Math.round(x)
 				strongThis.scrollY = Math.round(y)
-				if (y > strongThis.oldScrollY) {
-					strongThis.onScroll();
-				} else {
-					strongThis.onScroll();
-				}
-				strongThis.oldScrollX = x;
-				strongThis.oldScrollY = y;
+				strongThis.onScroll();
+				scheduled = false;
+			});
 
-			}
+
+
 		})
 
-		if (this.mView) {
-			const el = this.mView.getElement();
+		if (this.recyclerView) {
+			const el = this.recyclerView.getElement();
 			if (el) {
 				const ro = new ResizeObserver(entries => {
 					this.measuredHeight = Math.round(entries[0].contentRect.height);
@@ -99,8 +113,8 @@ export abstract class LayoutManager {
 
 
 	attachView(view: View) {
-		this.mView = view
-		this.content = new View(view.ctx(), "div", {"class": "scroll_body"})
+		this.recyclerView = view
+		this.content = new View(this.context, "div", {"class": "scroll_body"})
 		view.addView(this.content)
 		this.init()
 	}
@@ -129,6 +143,13 @@ export abstract class LayoutManager {
 			holder.mLastIndex = position
 			this.mAdapter.onBindViewHolder(holder, position)
 		}
+	}
+
+	lockView(){
+		this.recyclerView.removeView(this.content)
+	}
+	unlockView(){
+		this.recyclerView.addView(this.content)
 	}
 
 	addHolder(holder: ViewHolder) {
