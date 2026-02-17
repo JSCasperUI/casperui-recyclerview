@@ -10,7 +10,7 @@
 
 .wg_recyclerview > div > * {
     position: absolute;
-    will-change: transform;
+    /*will-change: transform;*/
 
 }
 .scroll_head {

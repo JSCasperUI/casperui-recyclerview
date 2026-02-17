@@ -13,6 +13,16 @@
     "*.map"
   ],
   "exports": {
+    "./bind": {
+      "import": "./dist/bind.js",
+      "require": "./dist/bind.js",
+      "types": "./dist/bind.d.ts"
+    },
+    "./R": {
+      "import": "./dist/R.js",
+      "require": "./dist/R.js",
+      "types": "./dist/R.d.ts"
+    },
     "./widget/Adapter": {
       "import": "./dist/widget/Adapter.js",
       "require": "./dist/widget/Adapter.js",

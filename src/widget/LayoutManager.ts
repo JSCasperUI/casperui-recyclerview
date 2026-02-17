@@ -53,32 +53,41 @@ export abstract class LayoutManager {
 		let scheduled = false;
 		let skipFrame = 0;
 
-		this.recyclerView.getElement().addEventListener("scroll", function () {
+		this.recyclerView.getElement().addEventListener("scroll", function (event) {
 			const strongThis = weakThis.deref();
 			if (!strongThis) return;
 
-			if (skipFrame > 0){
-				console.log("DOUBLE INITreturn")
-				return;
-			};
-			skipFrame = 1;
-			let before = strongThis.recyclerView.getScrollY();
-			requestAnimationFrame(() => {
-				skipFrame--
-				const strongNow = weakThis.deref();
-				if (!strongNow) return;
+            let y = strongThis.recyclerView.getScrollY();
+            let x = strongThis.recyclerView.getScrollX();
+            // let y = event.target.scrollTop;
+            // let x = event.target.scrollLeft;
 
+            strongThis.scrollX = Math.round(x)
+            strongThis.scrollY = Math.round(y)
+            strongThis.onScroll();
 
-				let y = strongThis.recyclerView.getScrollY();
-				let x = strongThis.recyclerView.getScrollX();
-				const after = y;
-				console.log("Before:", before, "After:", after, "Δ", after - before);
-
-				strongThis.scrollX = Math.round(x)
-				strongThis.scrollY = Math.round(y)
-				strongThis.onScroll();
-				scheduled = false;
-			});
+			// if (skipFrame > 0){
+			// 	console.log("DOUBLE INITreturn")
+			// 	return;
+			// };
+			// skipFrame = 1;
+			// let before = strongThis.recyclerView.getScrollY();
+			// requestAnimationFrame(() => {
+			// 	skipFrame--
+			// 	const strongNow = weakThis.deref();
+			// 	if (!strongNow) return;
+            //
+            //
+			// 	let y = strongThis.recyclerView.getScrollY();
+			// 	let x = strongThis.recyclerView.getScrollX();
+			// 	const after = y;
+			// 	console.log("Before:", before, "After:", after, "Δ", after - before);
+            //
+			// 	strongThis.scrollX = Math.round(x)
+			// 	strongThis.scrollY = Math.round(y)
+			// 	strongThis.onScroll();
+			// 	scheduled = false;
+			// });
 
 
 
@@ -153,7 +162,7 @@ export abstract class LayoutManager {
 	}
 
 	addHolder(holder: ViewHolder) {
-		holder.setVisibility(false)
+		// holder.setVisibility(false)
 		this.poolViews.push(holder)
 		this.content.addView(holder.mHolder)
 	}

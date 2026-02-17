@@ -20,7 +20,6 @@ export class VerticalLayoutManager extends LayoutManager {
 		}
 
 		this.clearHolders()
-		console.time("LayoutManager.updateViewPoolSize")
 		if (this.getChildCount() === 0) {
 			this.lockView()
 			let holderHeight = this.mAdapter?.getHolderHeight()
@@ -28,10 +27,11 @@ export class VerticalLayoutManager extends LayoutManager {
 			this.addHolder(firstHolder)
 			this.mHolderSize = holderHeight?holderHeight:firstHolder.mHolder.getHeight()
 			if (this.mHolderSize === 0) {
+                this.unlockView()
 				return
 			}
-			this.viewsPoolSize = Math.ceil(windowHeight / this.mHolderSize) + this.POOL_OFFSET_SIZE
-
+            this.viewsPoolSize = (Math.ceil(windowHeight / this.mHolderSize) + this.POOL_OFFSET_SIZE + 1) & ~1;
+            console.log("this.viewsPoolSize",this.viewsPoolSize)
 			for (let i = 1; i < this.viewsPoolSize; i++) {
 				let holder = this.mAdapter.createViewHolder(this.getParent(), 0);
 				this.addHolder(holder)
@@ -39,7 +39,6 @@ export class VerticalLayoutManager extends LayoutManager {
 			this.unlockView()
 
 		}
-		console.timeEnd("LayoutManager.updateViewPoolSize")
 	}
 
 
@@ -49,7 +48,7 @@ export class VerticalLayoutManager extends LayoutManager {
 			this.setOnChanged()
 			return
 		}
-		if (start < 0 || start >= itemsCount && start < 0) return;
+		if (start < 0 || start >= itemsCount) return;
 
 		for (let i = 0; i < this.poolViews.length; i++) {
 			if (this.poolViews[i].mLastIndex === start) {
@@ -61,6 +60,11 @@ export class VerticalLayoutManager extends LayoutManager {
 	}
 
 	private rebindAll(startIndex: number, itemCount: number) {
+        if (startIndex < 0) {
+            itemCount += startIndex;
+            startIndex = 0;
+            if (itemCount < 0) itemCount = 0;
+        }
 		let expectedY = startIndex * this.mHolderSize;
 		this.firstHolder.dataIndex = startIndex;
 		this.firstHolder.holderIndex = 0;
@@ -97,7 +101,7 @@ export class VerticalLayoutManager extends LayoutManager {
 		}
 
 		const firstIndex = Math.floor(scrollY / this.mHolderSize);
-		const lastIndex = Math.floor((scrollY + windowHeight) / this.mHolderSize);
+		const lastIndex = Math.floor((scrollY + windowHeight -1 ) / this.mHolderSize);
 
 
 		let needIndexTop = Math.max(0, firstIndex - 2)
@@ -217,7 +221,7 @@ export class VerticalLayoutManager extends LayoutManager {
 		let needIndexTop = Math.max(0, firstIndex - 2)
 		let endIndex = Math.min(items - needIndexTop, this.viewsPoolSize)
 		if (endIndex < this.viewsPoolSize) {
-			needIndexTop = Math.max(0, needIndexTop - this.viewsPoolSize - endIndex)
+            needIndexTop = Math.max(0, needIndexTop - (this.viewsPoolSize - endIndex));
 			endIndex = Math.min(this.viewsPoolSize, items);
 		}
 		this.rebindAll(needIndexTop, endIndex)
