@@ -21,11 +21,12 @@ export class VerticalLayoutManager extends LayoutManager {
 
 		this.clearHolders()
 		if (this.getChildCount() === 0) {
-			this.lockView()
+
 			let holderHeight = this.mAdapter?.getHolderHeight()
 			let firstHolder = this.mAdapter?.createViewHolder(this.getParent(), 0)
 			this.addHolder(firstHolder)
 			this.mHolderSize = holderHeight?holderHeight:firstHolder.mHolder.getHeight()
+			this.lockView()
 			if (this.mHolderSize === 0) {
                 this.unlockView()
 				return

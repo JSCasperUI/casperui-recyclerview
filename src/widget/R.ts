@@ -13,4 +13,4 @@ style:{
 
 },
 
-}
+} as const;
